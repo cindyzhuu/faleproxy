@@ -32,7 +32,7 @@ app.post('/fetch', async (req, res) => {
     // Use cheerio to parse HTML and selectively replace text content, not URLs
     const $ = cheerio.load(html);
 
-    // Process text nodes in the body (do not touch attributes/URLs)
+    // Replace only text nodes (do not touch attributes/URLs)
     $('body *')
       .contents()
       .filter(function () {
@@ -42,14 +42,15 @@ app.post('/fetch', async (req, res) => {
         const text = $(this).text();
         const newText = text
           .replace(/Yale/g, 'Fale')
-          .replace(/yale/g, 'fale');
+          .replace(/yale/g, 'fale'); // keep YALE unchanged (tests cover case handling separately)
         if (text !== newText) {
           $(this).replaceWith(newText);
         }
       });
 
     // Process title separately
-    const title = $('title').text()
+    const title = $('title')
+      .text()
       .replace(/Yale/g, 'Fale')
       .replace(/yale/g, 'fale');
     $('title').text(title);
@@ -58,17 +59,18 @@ app.post('/fetch', async (req, res) => {
       success: true,
       content: $.html(),
       title,
-      originalUrl: url
+      originalUrl: url,
     });
   } catch (error) {
     console.error('Error fetching URL:', error.message);
     return res.status(500).json({
-      error: `Failed to fetch content: ${error.message}`
+      error: `Failed to fetch content: ${error.message}`,
     });
   }
 });
 
 // Only start the server if this file is run directly (not when required by tests)
+/* istanbul ignore next */
 if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`Faleproxy server running at http://localhost:${PORT}`);
