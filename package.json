@@ -27,11 +27,9 @@
   },
   "jest": {
     "testEnvironment": "node",
+    "collectCoverage": true,
     "collectCoverageFrom": [
-      "**/*.js",
-      "!**/node_modules/**",
-      "!**/coverage/**",
-      "!jest.config.js"
+      "app.js"            
     ],
     "coverageThreshold": {
       "global": {
@@ -40,6 +38,16 @@
         "functions": 70,
         "lines": 70
       }
-    }
+    },
+    "coverageReporters": ["text", "lcov"],
+    "coverageDirectory": "coverage",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/coverage/"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/coverage/"
+    ]
   }
 }
